@@ -11,6 +11,10 @@ before_script:
 - export MAVEN_OPTS="-Xmx128m"
 before_deploy:
 - . .travis.sh before_deploy
+env:
+  global:
+  - SONATYPE_USERNAME=spotify-helios
+  - secure: "nGumIjLR2bz88sGBdDGu/e0P91MRGuBrvyrn49Cfr5jtDRVdByTLkCjZ88c1OxYnjquMN0MT/oAThpdHeRt+A12I0YXXAmlMvvs7Ic5GbljziVmEeX17yLjloqxB8DyhpOcjXba4akqKSAqJqBOrLANmlDZDlcZDcNs3IxBV1yw="
 deploy:
   provider: releases
   skip_cleanup: true
@@ -21,3 +25,8 @@ deploy:
     # All all_branches is required due to https://github.com/travis-ci/travis-ci/issues/1675
     all_branches: true
     tags: true
+#after_success:
+#- python .travis.addServer.py
+#- mvn clean deploy --settings ~/.m2/mySettings.xml
+after_success:
+  - "[[ $TRAVIS_BRANCH == \"drewc/mvn-central\" ]] && { python .travis.addServer.py; mvn clean deploy --settings ~/.m2/mySettings.xml; };"
