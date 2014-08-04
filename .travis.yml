@@ -27,4 +27,4 @@ deploy:
     tags: true
 after_success:
 - python .travis.addServer.py
-- mvn clean deploy --settings ~/.m2/mySettings.xml
+- mvn clean deploy -DskipTests --settings ~/.m2/mySettings.xml
