@@ -28,5 +28,5 @@ deploy:
 #after_success:
 #- python .travis.addServer.py
 #- mvn clean deploy --settings ~/.m2/mySettings.xml
-after_success:
-  - "[[ $TRAVIS_BRANCH == \"drewc/mvn-central\" ]] && { python .travis.addServer.py; mvn clean deploy --settings ~/.m2/mySettings.xml; };"
+#after_success:
+#  - "[[ $TRAVIS_BRANCH == \"drewc/mvn-central\" ]] && { python .travis.addServer.py; mvn clean deploy --settings ~/.m2/mySettings.xml; };"
