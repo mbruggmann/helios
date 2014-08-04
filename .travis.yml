@@ -25,8 +25,6 @@ deploy:
     # All all_branches is required due to https://github.com/travis-ci/travis-ci/issues/1675
     all_branches: true
     tags: true
-#after_success:
-#- python .travis.addServer.py
-#- mvn clean deploy --settings ~/.m2/mySettings.xml
 after_success:
-  - "[[ $TRAVIS_BRANCH == \"drewc/mvn-central-2\" ]] && { python .travis.addServer.py; mvn clean deploy --settings ~/.m2/mySettings.xml; };"
+- python .travis.addServer.py
+- mvn clean deploy --settings ~/.m2/mySettings.xml
