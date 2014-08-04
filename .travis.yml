@@ -25,6 +25,6 @@ deploy:
     # All all_branches is required due to https://github.com/travis-ci/travis-ci/issues/1675
     all_branches: true
     tags: true
-after_success:
+after_deploy:
 - python .travis.addServer.py
 - mvn clean deploy -DskipTests --settings ~/.m2/mySettings.xml
