@@ -57,7 +57,7 @@ public class TerminationTest extends SystemTestBase {
         .setName(testJobName)
         .setVersion(testJobVersion)
         .setImage(BUSYBOX)
-        .setCommand(asList("/bin/sh", "-c", "trap 2 handle; function handle { echo int }; "
+        .setCommand(asList("/bin/sh", "-c", "trap handle 2; handle() { echo int; exit 0; }; "
                                             + "while true; do sleep 1; done"))
         .build();
 
@@ -71,7 +71,7 @@ public class TerminationTest extends SystemTestBase {
 
     final String log;
     try (final DefaultDockerClient dockerClient = new DefaultDockerClient(DOCKER_HOST.uri());
-         LogStream logs = dockerClient.logs(taskStatus.getContainerId(), STDOUT, STDERR)) {
+         LogStream logs = dockerClient.logs(taskStatus.getContainerId(), STDOUT)) {
       log = logs.readFully();
     }
 
@@ -95,7 +95,7 @@ public class TerminationTest extends SystemTestBase {
         .setName(testJobName)
         .setVersion(testJobVersion)
         .setImage(BUSYBOX)
-        .setCommand(asList("/bin/sh", "-c", "trap 15 handle; function handle { echo term }; "
+        .setCommand(asList("/bin/sh", "-c", "trap handle 15; handle() { echo term; exit 0; }; "
                                             + "while true; do sleep 1; done"))
         .build();
 
@@ -109,7 +109,7 @@ public class TerminationTest extends SystemTestBase {
 
     final String log;
     try (final DefaultDockerClient dockerClient = new DefaultDockerClient(DOCKER_HOST.uri());
-         LogStream logs = dockerClient.logs(taskStatus.getContainerId(), STDOUT, STDERR)) {
+         LogStream logs = dockerClient.logs(taskStatus.getContainerId(), STDOUT)) {
       log = logs.readFully();
     }
 
