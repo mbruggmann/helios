@@ -24,6 +24,8 @@ package com.spotify.helios.system;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.LogStream;
 import com.spotify.helios.client.HeliosClient;
+import com.spotify.helios.common.descriptors.Deployment;
+import com.spotify.helios.common.descriptors.Goal;
 import com.spotify.helios.common.descriptors.Job;
 import com.spotify.helios.common.descriptors.JobId;
 import com.spotify.helios.common.descriptors.TaskStatus;
@@ -32,8 +34,8 @@ import org.junit.Test;
 
 import static com.spotify.docker.client.DockerClient.LogsParameter.STDOUT;
 import static com.spotify.helios.common.descriptors.HostStatus.Status.UP;
-import static com.spotify.helios.common.descriptors.TaskStatus.State.EXITED;
 import static com.spotify.helios.common.descriptors.TaskStatus.State.RUNNING;
+import static com.spotify.helios.common.descriptors.TaskStatus.State.STOPPED;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.junit.Assert.assertEquals;
@@ -64,9 +66,9 @@ public class TerminationTest extends SystemTestBase {
     deployJob(jobId, host);
     awaitTaskState(jobId, host, RUNNING);
 
-    client.undeploy(jobId, host);
+    client.setGoal(new Deployment(jobId, Goal.STOP), host);
 
-    final TaskStatus taskStatus = awaitTaskState(jobId, host, EXITED);
+    final TaskStatus taskStatus = awaitTaskState(jobId, host, STOPPED);
 
     final String log;
     try (final DefaultDockerClient dockerClient = new DefaultDockerClient(DOCKER_HOST.uri());
@@ -102,9 +104,9 @@ public class TerminationTest extends SystemTestBase {
     deployJob(jobId, host);
     awaitTaskState(jobId, host, RUNNING);
 
-    client.undeploy(jobId, host);
+    client.setGoal(new Deployment(jobId, Goal.STOP), host);
 
-    final TaskStatus taskStatus = awaitTaskState(jobId, host, EXITED);
+    final TaskStatus taskStatus = awaitTaskState(jobId, host, STOPPED);
 
     final String log;
     try (final DefaultDockerClient dockerClient = new DefaultDockerClient(DOCKER_HOST.uri());
