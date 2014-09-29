@@ -110,6 +110,7 @@ class TaskRunner extends InterruptingExecutionThreadService {
       } catch (DockerException e) {
         log.warn("Stopping image {} failed", containerId.get(), e);
       }
+      stopAsync();
     }
   }
 
