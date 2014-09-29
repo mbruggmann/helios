@@ -54,6 +54,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 class TaskRunner extends InterruptingExecutionThreadService {
 
   private static final Logger log = LoggerFactory.getLogger(TaskRunner.class);
+  private static final int SECONDS_TO_WAIT_BEFORE_KILL = 10;
 
   private final long delayMillis;
   private final SettableFuture<Integer> result = SettableFuture.create();
@@ -63,6 +64,7 @@ class TaskRunner extends InterruptingExecutionThreadService {
   private final Listener listener;
   private final ServiceRegistrar registrar;
   private Optional<ServiceRegistrationHandle> serviceRegistrationHandle;
+  private Optional<String> containerId;
 
   private TaskRunner(final Builder builder) {
     super("TaskRunner(" + builder.taskConfig.name() + ")");
@@ -73,6 +75,7 @@ class TaskRunner extends InterruptingExecutionThreadService {
     this.existingContainerId = builder.existingContainerId;
     this.registrar = checkNotNull(builder.registrar, "registrar");
     this.serviceRegistrationHandle = Optional.absent();
+    this.containerId = Optional.absent();
   }
 
   public Result<Integer> result() {
@@ -97,6 +100,19 @@ class TaskRunner extends InterruptingExecutionThreadService {
     return false;
   }
 
+  /**
+   * Stops this container.
+   */
+  public void stop() throws InterruptedException {
+    if (containerId.isPresent()) {
+      try {
+        docker.stopContainer(containerId.get(), SECONDS_TO_WAIT_BEFORE_KILL);
+      } catch (DockerException e) {
+        log.warn("Stopping image {} failed", containerId.get(), e);
+      }
+    }
+  }
+
   @Override
   protected void run() {
     try {
@@ -114,6 +130,7 @@ class TaskRunner extends InterruptingExecutionThreadService {
 
     // Create and start container if necessary
     final String containerId = createAndStartContainer();
+    this.containerId = Optional.of(containerId);
     listener.running();
 
     // Register and wait for container to exit
@@ -123,6 +140,7 @@ class TaskRunner extends InterruptingExecutionThreadService {
       exit = docker.waitContainer(containerId);
     } finally {
       unregister();
+      this.containerId = Optional.absent();
     }
 
     log.info("container exited: {}: {}: {}", config, containerId, exit.statusCode());
