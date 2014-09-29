@@ -30,7 +30,6 @@ import com.spotify.helios.common.descriptors.TaskStatus;
 
 import org.junit.Test;
 
-import static com.spotify.docker.client.DockerClient.LogsParameter.STDERR;
 import static com.spotify.docker.client.DockerClient.LogsParameter.STDOUT;
 import static com.spotify.helios.common.descriptors.HostStatus.Status.UP;
 import static com.spotify.helios.common.descriptors.TaskStatus.State.EXITED;
